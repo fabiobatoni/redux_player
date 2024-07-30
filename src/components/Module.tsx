@@ -1,8 +1,9 @@
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { ChevronDown } from "lucide-react";
 import { Lesson } from "./Lesson";
-import { useAppDispatch, useAppSelector } from '../store';
-import { play } from '../store/slices/player';
+//import { useAppDispatch, useAppSelector } from '../store';
+//import { play } from '../store/slices/player';
+import { useStore } from '../zustand-store';
 
 interface ModuleProps {
   moduleIndex: number;
@@ -12,16 +13,24 @@ interface ModuleProps {
 
 export function Module({moduleIndex, title, amountOfLessons} : ModuleProps) {
 
-  const dispatch = useAppDispatch()
+  // Com Redux
+  //const dispatch = useAppDispatch()
 
-  const { currentModuleIndex , currentLessonIndex } = useAppSelector(state => {
+  /* const { currentModuleIndex , currentLessonIndex } = useAppSelector(state => {
     const { currentModuleIndex , currentLessonIndex } = state.player
 
     return { currentModuleIndex , currentLessonIndex }
-  })
+  })*/
 
-  const lessons = useAppSelector((state) => {
-    return state.player.course?.modules[moduleIndex].lessons
+
+  // Com Zustand
+  const { currentLessonIndex, currentModuleIndex, play, lessons } = useStore(store => {
+    return {
+      lessons: store.course?.modules[moduleIndex].lessons,
+      currentLessonIndex: store.currentLessonIndex,
+      currentModuleIndex: store.currentModuleIndex,
+      play: store.play
+    }
   })
 
   return(
@@ -52,7 +61,7 @@ export function Module({moduleIndex, title, amountOfLessons} : ModuleProps) {
                   key={lesson.id} 
                   title={lesson.title} 
                   duration={lesson.duration} 
-                  onPlay={() => dispatch(play([moduleIndex, lessonIndex]))}
+                  onPlay={() => (play([moduleIndex, lessonIndex]))}
                   isCurrent={isCurrent}
                 />
               )
